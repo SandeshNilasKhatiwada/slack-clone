@@ -1,8 +1,6 @@
 package middleware
 
 import (
-	"fmt"
-
 	"github.com/SandeshNilasKhatiwada/slack-clone/internal/auth"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
@@ -27,12 +25,16 @@ func RequireAuth(c *fiber.Ctx) error {
 		}
 		return []byte(auth.SecretKey), nil
 	})
-	fmt.Println(token)
 	if err != nil || !token.Valid {
 		return c.JSON(fiber.Map{
 			"status":  "error",
 			"message": "Unauthorized",
 		})
+	}
+
+	// Extract claims and store in context locals
+	if claims, ok := token.Claims.(jwt.MapClaims); ok {
+		c.Locals("user", claims)
 	}
 
 	// Move to the next function (the actual route handler)

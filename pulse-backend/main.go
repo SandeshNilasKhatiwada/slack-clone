@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/SandeshNilasKhatiwada/slack-clone/internal/database"
+	"github.com/SandeshNilasKhatiwada/slack-clone/internal/middleware"
 
 	"github.com/SandeshNilasKhatiwada/slack-clone/internal/auth"
-	"github.com/SandeshNilasKhatiwada/slack-clone/internal/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -30,10 +30,13 @@ func main() {
 			"message": "Database connection successful",
 		})
 	})
-
+	
 	app.Post("/api/user/register", auth.Register)
 	app.Post("/api/user/login", auth.Login)
-	app.Put("/api/user/update", middleware.RequireAuth, auth.UpdateUser)
+	
+	user := app.Group("/api/user", middleware.RequireAuth)
+	user.Get("/me", auth.GetMe)
+
 
 	// Start the server on port 8080
 	app.Listen(":8080")

@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/SandeshNilasKhatiwada/slack-clone/internal/database"
@@ -112,10 +111,22 @@ func Login(c *fiber.Ctx) error {
 	})
 }
 
-func UpdateUser(c *fiber.Ctx) error {
-	fmt.Println(user)
-
+func GetMe(c *fiber.Ctx) error {
+	user, ok := c.Locals("user").(jwt.MapClaims)
+	if !ok {
+		return c.JSON(fiber.Map{
+			"status":  "error",
+			"message": "Unauthorized",
+		})
+	}
 	return c.JSON(fiber.Map{
-		"message": "Update user",
+		"message": "User details retrieved successfully",
+		"user": fiber.Map{
+			"id":       user["id"],
+			"username": user["username"],
+			"email":    user["email"],
+		},
 	})
 }
+
+
