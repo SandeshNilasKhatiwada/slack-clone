@@ -1,0 +1,43 @@
+services:
+  # Our Database
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: sandesh1
+      POSTGRES_DB: pulsedb
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # This saves your DB data even if the container stops!
+
+  # Our Message Broker (Added here to prepare for Phase 6!)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  # Our Go API
+  backend:
+    build: ./pulse-backend
+    ports:
+      - "8080:8080"
+    environment:
+      # This exactly matches the service name 'postgres' above! Docker handles the DNS routing.
+      - DB_HOST=postgres 
+      - DB_USER=postgres
+      - DB_PASSWORD=sandesh1
+      - DB_NAME=pulsedb
+    depends_on:
+      - postgres
+
+  # Our Angular UI
+  frontend:
+    build: ./pulse-frontend
+    ports:
+      - "4200:80" # Map our local port 4200 to Nginx's internal port 80
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

@@ -15,31 +15,26 @@ func UpgradeToWebSocket(c *fiber.Ctx) error {
 	return fiber.ErrUpgradeRequired
 }
 
+// HandleChat upgrades the HTTP connection and connects the user to the Hub
 var HandleChat = websocket.New(func(c *websocket.Conn) {
-	// When a client connects, log it
-	log.Println("New WebSocket connection established!")
+	// 1. Register this new connection to the Hub
+	ChatHub.Register <- c
 
-	// Create an infinite loop to keep the connection alive and listen for messages
+	// 2. Ensure we unregister the user when they disconnect
+	defer func() {
+		ChatHub.Unregister <- c
+	}()
+
+	// 3. Listen for incoming messages from THIS specific client
 	for {
-		var msg map[string]interface{}
-
-		// 1. Read the message from the Angular client
+		var msg ChatMessage
 		err := c.ReadJSON(&msg)
 		if err != nil {
 			log.Println("Client disconnected or error:", err)
-			break // Break the loop if the client disconnects
+			break // Break the loop, which triggers the defer func above
 		}
 
-		log.Printf("Received message from Angular: %v\n", msg)
-
-		// 2. Echo the message back to the client to prove it works
-		response := map[string]string{
-			"status": "Message received loud and clear!",
-		}
-
-		if err := c.WriteJSON(response); err != nil {
-			log.Println("Error writing message:", err)
-			break
-		}
+		// 4. Send the message to the Hub's broadcast channel
+		ChatHub.Broadcast <- msg
 	}
 })
