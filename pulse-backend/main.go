@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/SandeshNilasKhatiwada/slack-clone/internal/chat"
 	"github.com/SandeshNilasKhatiwada/slack-clone/internal/database"
 	"github.com/SandeshNilasKhatiwada/slack-clone/internal/middleware"
 
@@ -43,6 +44,11 @@ func main() {
 
 	user := app.Group("/api/user", middleware.RequireAuth)
 	user.Get("/me", auth.GetMe)
+	
+	// --- WebSocket Routes ---
+	// We use the Upgrade middleware first, then pass it to our WebSocket handler
+	app.Use("/ws", chat.UpgradeToWebSocket)
+	app.Get("/ws/chat", chat.HandleChat)
 
 	// Start the server on port 8080
 	app.Listen(":8080")
