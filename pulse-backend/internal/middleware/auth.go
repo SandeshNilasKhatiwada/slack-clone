@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/SandeshNilasKhatiwada/slack-clone/internal/auth"
+	"github.com/SandeshNilasKhatiwada/slack-clone/internal/service"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -23,7 +23,7 @@ func RequireAuth(c *fiber.Ctx) error {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fiber.NewError(fiber.StatusUnauthorized, "Unexpected signing method")
 		}
-		return []byte(auth.SecretKey), nil
+		return []byte(service.SecretKey), nil
 	})
 	if err != nil || !token.Valid {
 		return c.JSON(fiber.Map{

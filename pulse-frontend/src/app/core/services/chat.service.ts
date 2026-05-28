@@ -6,7 +6,7 @@ import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 })
 export class ChatService {
 
-  private socket$!: WebSocketSubject<any>;
+  public socket$!: WebSocketSubject<any>;
 
   public connect() {
     this.socket$ = webSocket('ws://localhost:8080/ws/chat');
@@ -19,7 +19,7 @@ export class ChatService {
   }
   public sendMessage(message: string) {
     if (this.socket$) {
-      this.socket$.next({ content: message });
+      this.socket$.next({ text: message });
     } else {
       console.error('WebSocket connection is not established.');
     }
