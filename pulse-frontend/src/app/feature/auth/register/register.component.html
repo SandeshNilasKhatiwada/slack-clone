@@ -1,1 +1,43 @@
-<p>register works!</p>
+<div
+  style="
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+  "
+>
+  <h2>Join Pulse</h2>
+
+  <form
+    [formGroup]="registerForm"
+    (ngSubmit)="onSubmit()"
+    style="display: flex; flex-direction: column; gap: 15px"
+  >
+    <div>
+      <label>Username</label><br />
+      <input
+        type="text"
+        formControlName="username"
+        placeholder="Enter username"
+      />
+    </div>
+
+    <div>
+      <label>Email</label><br />
+      <input type="email" formControlName="email" placeholder="Enter email" />
+    </div>
+
+    <div>
+      <label>Password</label><br />
+      <input
+        type="password"
+        formControlName="password"
+        placeholder="Min 6 characters"
+      />
+    </div>
+
+    <button type="submit" [disabled]="registerForm.invalid">Register</button>
+  </form>
+
+  <p>Already have an account? <a routerLink="/login">Login here</a></p>
+</div>

@@ -15,14 +15,14 @@ export interface AuthResponse {
 })
 export class AuthService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/auth';
+  private apiUrl = 'http://localhost:8080/api';
 
   register(userData: any) {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, userData);
+    return this.http.post<AuthResponse>(`${this.apiUrl}/user/register`, userData);
   }
 
   login(credentials: any) {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials);
+    return this.http.post<AuthResponse>(`${this.apiUrl}/user/login`, credentials);
   }
 
   // helper to save token to localStorage
